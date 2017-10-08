@@ -18,10 +18,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->cleanDataBase();
 
-        $user = \App\User::find(1);
-        $user->email = 'mail@mail.com';
-        $user->save();
-
+        $this->call(UsersSeeder::class);
+        $this->call(ChallengesSeeder::class);
     }
 
     public function cleanDataBase()

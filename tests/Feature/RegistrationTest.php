@@ -41,7 +41,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $user = User::whereName('Zalo')->first();
-        $this->assertEquals(false, $user->confirmed);
+        $this->assertEquals(0, $user->confirmed);
         $this->assertNotNull($user->confirmation_token);
 
         $this->get(route('register.confirm', ['token' => $user->confirmation_token]))

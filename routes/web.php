@@ -17,6 +17,10 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('register/confirm', 'Auth\RegisterController@confirm')->name('register.confirm');
+Route::get('/register/confirm', 'Auth\RegisterController@confirm')->name('register.confirm');
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/profiles/{user}', 'UserProfilesController@show')->name('profiles');
+
+Route::resource('challenges', 'ChallengesController');

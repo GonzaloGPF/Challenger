@@ -27,6 +27,25 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $casts = [
+        'confirmed' => 'boolean'
+    ];
+
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
+
+    public function createdChallenges()
+    {
+        return $this->hasMany(Challenge::class, 'creator_id');
+    }
+
+    public function challenges()
+    {
+        return $this->belongsToMany(Challenge::class);
+    }
+
     public function confirm()
     {
         $this->update([
