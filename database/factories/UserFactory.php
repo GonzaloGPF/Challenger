@@ -30,3 +30,11 @@ $factory->state(App\User::class, 'unconfirmed', function() {
         'confirmed' => false
     ];
 });
+
+$factory->state(App\User::class, 'test', function() {
+    return [
+        'email' => 'mail@mail.com',
+        'name' => 'TestUser',
+        'confirmed' => true
+    ];
+});

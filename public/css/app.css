@@ -9191,3 +9191,41 @@ a.text-dark:hover {
   visibility: hidden !important;
 }
 
+.form {
+  max-width: 600px;
+  margin: auto;
+}
+
+.card-channel {
+  margin-top: 2rem;
+}
+
+.card-channel .card-body {
+  height: 10rem;
+}
+
+.channel-chat .messages-list {
+  padding: 1em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  height: 400px;
+  overflow-y: scroll;
+}
+
+.channel-chat .messages-list .message {
+  list-style: none;
+  padding: 0.5em 1em 0;
+  border-radius: 15px;
+  -webkit-box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+          box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+  margin-top: 1em;
+}
+

@@ -10,8 +10,10 @@ window._ = require('lodash');
 try {
     window.$ = window.jQuery = require('jquery');
     window.Popper = require('popper.js').default;
+    window.moment = require('moment');
 
     require('bootstrap');
+    // require('mdbootstrap');
 } catch (e) {}
 
 /**
@@ -31,6 +33,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  */
 
 let token = document.head.querySelector('meta[name="csrf-token"]');
+let user = document.head.querySelector('meta[name="user"]');
 
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
@@ -38,17 +41,27 @@ if (token) {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
+window.flash = (message, level = 'success') => {
+    window.events.$emit('flash', {message, level});
+};
+
+window.App = {
+    'user': user.content ? JSON.parse(user.content) : null
+};
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
 
-// import Echo from 'laravel-echo'
+import Echo from 'laravel-echo'
 
-// window.Pusher = require('pusher-js');
+window.Pusher = require('pusher-js');
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: 'your-pusher-key'
-// });
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: 'c79126015a7b084c24b0',
+    cluster: 'eu',
+    encrypted: true
+});

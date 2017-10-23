@@ -5,10 +5,6 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    private $tables = [
-        'users',
-        'password_resets'
-    ];
     /**
      * Run the database seeds.
      *
@@ -16,10 +12,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        if (App::environment() === 'production') exit();
+
         $this->cleanDataBase();
 
         $this->call(UsersSeeder::class);
-        $this->call(ChallengesSeeder::class);
+        $this->call(ChannelsSeeder::class);
+        $this->call(MessagesSeeder::class);
     }
 
     public function cleanDataBase()
@@ -27,10 +26,14 @@ class DatabaseSeeder extends Seeder
         //disable foreign key check for this connection before truncating tables
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        foreach ($this->tables as $tableName){
-            DB::table($tableName)->truncate();
-        }
+        $database = DB::select('SELECT DATABASE() AS name');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $col = 'Tables_in_' . $database[0]->name;
+
+        $tables = array_except(DB::select('SHOW TABLES'), ['migrations']);
+
+        foreach ($tables as $table) {
+            DB::table($table->$col)->truncate();
+        }
     }
 }

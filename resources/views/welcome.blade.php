@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="links">
-                        <a href="{{ route('challenges.index') }}">Enter</a>
+                        <a href="{{ route('channels.index') }}">Enter</a>
                     </div>
                 </div>
             </div>

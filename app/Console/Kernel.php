@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        //TODO: command to remove channels without activity
         // $schedule->command('inspire')
         //          ->hourly();
     }

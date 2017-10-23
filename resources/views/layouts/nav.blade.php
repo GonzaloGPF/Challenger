@@ -20,20 +20,20 @@
                         Browse <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropDownBrowse">
-                        <li class="dropdown-item"><a href="{{ url('challenges') }}">All Challenges</a></li>
+                        <li class="dropdown-item"><a href="{{ url('channels') }}">All Channels</a></li>
                         @if(\Auth::check())
-                            <li class="dropdown-item"><a href="{{ url('challenges', ['name' => \Auth::user()] ) }}">My Challenges</a></li>
+                            <li class="dropdown-item"><a href="{{ url('channels', ['name' => \Auth::user()] ) }}">My Channels</a></li>
                         @endif
-{{--                        <li class="dropdown-item"><a href="{{ route('challenges', ['popular' => 1] )}}">Popular Challenges</a></li>--}}
+{{--                        <li class="dropdown-item"><a href="{{ route('channels', ['popular' => 1] )}}">Popular Channels</a></li>--}}
                     </ul>
                 </li>
-                <li class="nav-item"><a href="{{ route('challenges.create') }}" class="nav-link">New Challenge</a></li>
+                <li class="nav-item"><a href="{{ route('channels.create') }}" class="nav-link">New Channel</a></li>
 
                 {{--<li class="dropdown">--}}
                     {{--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Categories <span class="caret"></span></a>--}}
                     {{--<ul class="dropdown-menu">--}}
                         {{--@foreach($challengeCategory as $category)--}}
-                            {{--<li><a href="{{url('challenges', ['type' => $category->id] ) }}">{{ $category->name }}</a></li>--}}
+                            {{--<li><a href="{{url('channels', ['type' => $category->id] ) }}">{{ $category->name }}</a></li>--}}
                         {{--@endforeach--}}
                     {{--</ul>--}}
                 {{--</li>--}}

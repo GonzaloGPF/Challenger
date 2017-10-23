@@ -11,11 +11,15 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
+        factory(\App\User::class)->states('test')->create();
+        factory(\App\User::class)->states('test')->create([
+            'name' => 'TestUser2',
+            'email' => 'mail2@mail.com'
+        ]);
+        factory(\App\User::class)->states('test')->create([
+            'name' => 'TestUser3',
+            'email' => 'mail3@mail.com'
+        ]);
         factory(\App\User::class, 10)->create();
-
-        $user = \App\User::find(1);
-        $user->email = 'mail@mail.com';
-        $user->confirmed = true;
-        $user->save();
     }
 }

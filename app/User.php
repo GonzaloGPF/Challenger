@@ -24,7 +24,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'email', 'confirmation_token'
     ];
 
     protected $casts = [
@@ -36,14 +36,33 @@ class User extends Authenticatable
         return 'name';
     }
 
-    public function createdChallenges()
+    public function channels()
     {
-        return $this->hasMany(Challenge::class, 'creator_id');
+        return $this->belongsToMany(Channel::class);
     }
 
-    public function challenges()
+    public function createdChannels()
     {
-        return $this->belongsToMany(Challenge::class);
+        return $this->hasMany(Channel::class, 'creator_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function joinToChannel(Channel $channel)
+    {
+        $this->channels()->save($channel);
+        $channel->increment('users_count');
+        return $this;
+    }
+
+    public function leaveChannel(Channel $channel)
+    {
+        $this->channels()->detach($channel->id);
+        $channel->decrement('users_count');
+        return $this;
     }
 
     public function confirm()

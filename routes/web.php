@@ -20,7 +20,14 @@ Auth::routes();
 Route::get('/register/confirm', 'Auth\RegisterController@confirm')->name('register.confirm');
 
 Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/chat', 'ChatController@index')->name('chat');
 
+Route::resource('users', 'UsersController');
 Route::get('/profiles/{user}', 'UserProfilesController@show')->name('profiles');
 
-Route::resource('challenges', 'ChallengesController');
+Route::resource('channels', 'ChannelsController');
+
+Route::post('channels/{channel}/join', 'JoinChannelController@join');
+Route::post('channels/{channel}/leave', 'JoinChannelController@leave');
+
+Route::resource('channels/{channel}/messages', 'MessagesController')->only(['index', 'store']);
