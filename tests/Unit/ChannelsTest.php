@@ -46,6 +46,22 @@ class ChannelsTest extends TestCase
     }
 
     /** @test */
+    public function it_has_a_pusher_name()
+    {
+        $channel = create(Channel::class);
+
+        $this->assertEquals("channel.$channel->id", $channel->pusherName);
+    }
+
+    /** @test */
+    public function it_can_get_channel_from_pusher_channel_name()
+    {
+        $id = $this->channel->id;
+
+        $this->assertInstanceOf(Channel::class, Channel::getChannelFromPusherChannelName('presence-channel.' . $id));
+    }
+
+    /** @test */
     public function it_has_users_in()
     {
         $this->assertInstanceOf(Collection::class, $this->channel->users);

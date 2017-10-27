@@ -9229,3 +9229,13 @@ a.text-dark:hover {
   margin-top: 1em;
 }
 
+.emoji-mart {
+  position: absolute;
+  top: -312px;
+  right: 0;
+}
+
+.emoji-mart .emoji-mart-bar {
+  display: none;
+}
+

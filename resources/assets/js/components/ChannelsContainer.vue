@@ -12,7 +12,8 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">
-                            <a href="#" @click.preven="channelClicked(channel)" v-text="channel.name"></a>
+                            <span v-text="channel.name" v-if="isFull(channel)"></span>
+                            <a href="#" @click="channelClicked(channel)" v-text="channel.name" v-else></a>
                         </h4>
                         <!--<p class="card-text">{{ $channel->description }}</p>-->
                         <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
@@ -24,7 +25,7 @@
             </div>
         </div>
 
-        <channel-chat v-else :data="selectedChannel"></channel-chat>
+        <channel-chat v-else :data="selectedChannel" @user-leave="userLeave()"></channel-chat>
 
     </div>
 </template>
@@ -56,6 +57,7 @@
             channelClicked(channel) {
                 if (this.isLogged()) {
                     this.selectedChannel = channel;
+                    channel.users_count++;
                 } else {
                     window.events.$emit('flash', {
                         message: 'You need log in',
@@ -66,6 +68,15 @@
 
             findChannel(channel) {
                 return this.channels.find((item) => item.id === channel.id)
+            },
+
+            isFull(channel) {
+                return channel.users_count === channel.capacity;
+            },
+
+            userLeave(channel) {
+                // TODO:
+//                this.findChannel(channel).users_count--;
             }
         }
     }

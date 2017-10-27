@@ -41,58 +41,6 @@ class ChannelsChatTest extends TestCase
     }
 
     /** @test */
-    public function unauthenticated_users_can_not_join_channels()
-    {
-        $channel = create(Channel::class);
-        $this->postJson($channel->path('join'), $channel->toArray())
-            ->assertStatus(Response::HTTP_UNAUTHORIZED);
-    }
-
-//    /** @test */
-//    public function unconfirmed_users_can_not_send_messages_in_channels()
-//    {
-//        $this->signIn(factory(User::class)->states('unconfirmed')->create());
-//
-//        $channel = create(Channel::class);
-//        $this->postJson($channel->path('join'))
-//            ->assertStatus(Response::HTTP_UNAUTHORIZED);
-//    }
-
-    /** @test */
-    public function authenticated_users_can_join_and_leave_public_channels()
-    {
-        $this->signIn();
-        $this->withoutExceptionHandling();
-        $channel = create(Channel::class);
-
-        $this->assertCount(0, $channel->users);
-
-        $this->postJson($channel->path('join'), $channel->toArray())
-            ->assertStatus(Response::HTTP_OK);
-
-        $this->assertCount(1, $channel->fresh()->users);
-
-        $this->postJson($channel->path('leave'), $channel->toArray())
-            ->assertStatus(Response::HTTP_OK);
-
-        $this->assertCount(0, $channel->users);
-    }
-
-    /** @test */
-    public function authenticated_user_can_not_join_in_a_public_channel_that_is_full()
-    {
-        $channel = create(Channel::class, ['capacity' => 2]);
-
-        $channel->users()->saveMany(create(User::class, [], 2));
-
-        $this->assertCount(2, $channel->fresh()->users);
-
-        $this->signIn($this->user);
-        $this->postJson($channel->path('join'))
-            ->assertStatus(Response::HTTP_FORBIDDEN);
-    }
-
-    /** @test */
     public function authenticated_users_in_a_channel_can_fetch_messages_from_other_users()
     {
         $this->signIn();

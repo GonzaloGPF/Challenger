@@ -9,6 +9,8 @@ class Channel extends Model
 {
     protected $fillable = ['name', 'description', 'capacity', 'public', 'creator_id', 'language_id'];
 
+    protected $appends = ['pusher_name'];
+
     protected static function boot()
     {
         parent::boot();
@@ -17,6 +19,11 @@ class Channel extends Model
     public function getRouteKeyName()
     {
         return 'name';
+    }
+
+    public function getPusherNameAttribute()
+    {
+        return "channel.$this->id";
     }
 
     public function path($extra = null)
@@ -50,9 +57,21 @@ class Channel extends Model
         return $this->hasMany(Message::class);
     }
 
-    public function alreadyHasUser($user)
+    public function alreadyHasUser($user = null)
     {
+        $user = $user ?: auth()->user();
         return $this->users()->where('user_id', $user->id)->exists();
+    }
+
+    public function isFull()
+    {
+        return $this->users()->count() === (int) $this->capacity;
+    }
+
+    public static function getChannelFromPusherChannelName($pusherChannelName)
+    {
+        $id = (int) str_replace('presence-channel.', '', $pusherChannelName);
+        return Channel::find($id);;
     }
 
     public function scopePublic($query)

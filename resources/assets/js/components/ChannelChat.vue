@@ -18,7 +18,7 @@
                         <!--<button type="button" class="btn link" @click="closeChat()">-->
                             <!--<i class="material-icons">indeterminate_check_box</i>-->
                         <!--</button>-->
-                        <button type="button" class="btn link" @click="leaveChannel()">
+                        <button type="button" class="btn link" @click="closeChat()">
                             <i class="material-icons">close</i>
                         </button>
                     </div>
@@ -55,8 +55,11 @@
                         <div class="input-group">
                             <!--<span class="input-group-addon"><i class="material-icons">send</i></span>-->
                             <input id="message" type="text" class="form-control" v-model="message" placeholder="Say something" @keyup.enter="sendMessage()">
-
+                            <picker v-show="showEmojiMart" @click="emojiClicked($event)"></picker>
                             <div class="input-group-btn">
+                                <button class="btn btn-secondary" :class="{ 'active': showEmojiMart }" @click="showEmojiMart = !showEmojiMart">
+                                    <i class="material-icons">face</i>
+                                </button>
                                 <button class="btn btn-secondary" @click="sendMessage()">
                                     <i class="material-icons">send</i>
                                 </button>
@@ -77,9 +80,12 @@
 
 <script>
     import moment from 'moment';
+    import { Picker } from 'emoji-mart-vue';
 
     export default {
         props: ['data'],
+
+        components: { Picker },
 
         data() {
             return {
@@ -87,14 +93,14 @@
                 users: [],
                 messages: [],
                 message: '',
-                showMore: false
+                showMore: false,
+                showEmojiMart: false
             }
         },
 
         created() {
             this.joinToChannel();
             this.fetchMessages();
-
         },
 
         computed: {
@@ -103,22 +109,27 @@
 
         methods: {
             leaveChannel(){
-                axios.post(`/channels/${this.channel.name}/leave`)
-                    .then(() => {
-                        Echo.leave(`channel.${this.channel.id}`);
-                        this.closeChat();
-                    });
+//                axios.post(`/channels/${this.channel.name}/leave`)
+//                    .then(() => {
+////                        Echo.leave(`channel.${this.channel.id}`);
+//                        this.closeChat();
+//                    });
             },
 
             joinToChannel(){
-                axios.post(`/channels/${this.channel.name}/join`)
+                axios.post(`/channels/join/${this.channel.name}`)
                     .then(({data}) => {
                         this.listen();
+                    })
+                    .catch(() => {
+                        this.closeChat();
+                        Echo.leave(this.channel.pusher_name);
+                        window.events.$emit('flash', 'Problem joining to channel');
                     });
             },
 
             listen(){
-                Echo.join(`channel.${this.channel.id}`)
+                Echo.join(this.channel.pusher_name)
                     .here((users) => {
                         this.users = users;
                     })
@@ -128,6 +139,7 @@
                     })
                     .leaving((user) => {
                         console.log('User leaving: '+user.name);
+                        axios.post(`/channels/${this.channel.name}/leave/${user.id}`);
                         this.users.splice(user, 1);
                     })
                     .listen('MessageSent', (data) => {
@@ -174,7 +186,12 @@
             },
 
             closeChat() {
+                this.$emit('user-leave', this.channel);
                 this.$parent.selectedChannel = null;
+            },
+
+            emojiClicked(event) {
+                this.message = this.message + event.native
             }
         }
     };

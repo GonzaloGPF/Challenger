@@ -21,7 +21,7 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 
 Broadcast::channel('channel.{channelId}', function ($user, $channelId) {
     $channel = \App\Channel::find($channelId);
-    if(auth()->check() && $user->can('join', $channel)) {
+    if(auth()->check() && !$channel->isFull()) {
         return [
             'id' => $user->id,
             'name' => $user->name
