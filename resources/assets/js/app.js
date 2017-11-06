@@ -17,6 +17,7 @@ window.Vue = require('vue');
 
 Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('channels-container', require('./components/ChannelsContainer.vue'));
+Vue.component('channel-chat', require('./components/ChannelChat.vue'));
 Vue.component('chat-messages', require('./components/ChannelChat.vue'));
 Vue.component('chat-form', require('./components/MessageForm.vue'));
 

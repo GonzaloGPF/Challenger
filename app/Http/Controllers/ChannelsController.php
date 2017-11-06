@@ -33,6 +33,11 @@ class ChannelsController extends Controller
         return view('channels.index', compact('channels'));
     }
 
+    public function show(Channel $channel)
+    {
+        return view('channels.show', compact('channel'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -56,14 +56,4 @@ class ChannelPolicy
     {
         //
     }
-
-    public function join(User $user, Channel $channel)
-    {
-        return $channel->users()->count() < $channel->capacity;
-    }
-
-    public function leave(User $user, Channel $channel)
-    {
-        return $channel->alreadyHasUser($user);
-    }
 }

@@ -28,23 +28,13 @@ class ChannelJoinLeaveTest extends TestCase
 
         $this->assertCount(0, $channel->users);
 
-        $this->postJson('channels/join', [
-            'name' => 'member_added',
-            'channel' => "presence-$channel->pusherName",
-            'user_id' => auth()->id()
-        ])
-            ->assertStatus(Response::HTTP_OK);
+        $this->postJson($channel->path('join'));
 
         $this->assertCount(1, $channel->fresh()->users);
-//
-//        $this->postJson('channels/leave', [
-//            'name' => 'member_removed',
-//            'channel' => "presence-$channel->pusherName",
-//            'user_id' => auth()->id()
-//        ])
-//            ->assertStatus(Response::HTTP_OK);
-//
-//        $this->assertCount(0, $channel->users);
+
+        $this->postJson($channel->path('leave'));
+
+        $this->assertCount(0, $channel->users);
     }
 
     /** @test */
@@ -57,7 +47,7 @@ class ChannelJoinLeaveTest extends TestCase
 
         $this->assertCount(2, $channel->fresh()->users);
         $this->signIn();
-        $this->postJson("channels/join/$channel->name")
+        $this->postJson($channel->path('join'))
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 }

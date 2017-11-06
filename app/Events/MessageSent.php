@@ -52,6 +52,6 @@ class MessageSent implements ShouldBroadcast
         // Using the PrivateChannel class, Laravel is smart enough to know that we are creating a private channel,
         // so don’t prefix the channel name with private- (as specified by Pusher),
         // Laravel will add the private- prefix under the hood.
-        return new PresenceChannel('channel.'.$this->channel->id);
+        return new PresenceChannel($this->channel->pusherName);
     }
 }

@@ -1,9 +1,12 @@
 <template>
     <div>
-        <div v-if="!selectedChannel" class="row channels-container">
-            <div v-show="!channels.length">
-                <p>No Channels</p>
-            </div>
+        <div v-show="!channels.length">
+            <p>No Channels</p>
+        </div>
+        <div class="alert alert-warning" v-if="!isLogged()">
+            You need be logged to join public channels
+        </div>
+        <div class="row">
             <div class="col-xs-6 col-md-4 col-lg-3" v-for="channel in channels">
                 <div class="card card-channel">
                     <div class="card-header">
@@ -12,8 +15,8 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">
-                            <span v-text="channel.name" v-if="isFull(channel)"></span>
-                            <a href="#" @click="channelClicked(channel)" v-text="channel.name" v-else></a>
+                            <a :href="'/channels/'+channel.name" v-text="channel.name" v-if="!isFull(channel) && isLogged()"></a>
+                            <span v-text="channel.name" v-else></span>
                         </h4>
                         <!--<p class="card-text">{{ $channel->description }}</p>-->
                         <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
@@ -24,9 +27,6 @@
                 </div>
             </div>
         </div>
-
-        <channel-chat v-else :data="selectedChannel" @user-leave="userLeave()"></channel-chat>
-
     </div>
 </template>
 <script>

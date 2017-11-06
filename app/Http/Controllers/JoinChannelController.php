@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Channel;
 use App\Events\UserJoinedToChannel;
 use App\Events\UserLeftChannel;
+use Symfony\Component\HttpFoundation\Response;
 
 class JoinChannelController extends Controller
 {
@@ -16,7 +17,9 @@ class JoinChannelController extends Controller
 
     public function join(Channel $channel)
     {
-        $this->authorize('join', $channel);
+        if($channel->isFull()){
+            return response('Channel is full', Response::HTTP_FORBIDDEN);
+        }
 
         $user = auth()->user();
 
@@ -26,17 +29,19 @@ class JoinChannelController extends Controller
 
         broadcast(new UserJoinedToChannel($user, $channel))->toOthers();
 
-        return response(['hashedName' => $channel->hashedName], 200);
+        return response([], 200);
     }
 
     public function leave(Channel $channel)
     {
-        $this->authorize('leave', $channel);
+        $user = auth()->user();
 
-        auth()->user()->leaveChannel($channel);
+        if (!$channel->alreadyHasUser($user)) {
+            $user->leaveChannel($channel);
 
-        broadcast(new UserLeftChannel(auth()->user(), $channel))->toOthers();
+            broadcast(new UserLeftChannel(auth()->user(), $channel))->toOthers();
+        }
 
-        return response()->json(['message' => 'Channel left']);
+        return response([], 200);
     }
 }

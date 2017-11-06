@@ -26,11 +26,9 @@ Route::resource('users', 'UsersController');
 Route::get('/profiles/{user}', 'UserProfilesController@show')->name('profiles');
 
 Route::resource('channels', 'ChannelsController');
-
 Route::post('channels/{channel}/join', 'JoinChannelController@join');
-Route::post('channels/{channel}/leave/{user?}', 'JoinChannelController@leave');
+Route::post('channels/{channel}/leave', 'JoinChannelController@leave');
 
-Route::post('channels/join/{channel?}', 'PusherController@join');
-Route::post('channels/leave', 'PusherController@leave');
+Route::post('webHooks', 'PusherController@webHooks');
 
 Route::resource('channels/{channel}/messages', 'MessagesController')->only(['index', 'store']);

@@ -16,6 +16,7 @@ class MessagesResource extends Resource
     public function toArray($request)
     {
         return [
+            'user_id' => $this->user->id,
             'channel_id' => $this->channel->id,
             'created_at' => $this->created_at->toDateTimeString(),
             'text' => $this->text,

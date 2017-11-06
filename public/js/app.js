@@ -16902,6 +16902,7 @@ window.Vue = __webpack_require__(160);
 
 Vue.component('flash', __webpack_require__(161));
 Vue.component('channels-container', __webpack_require__(169));
+Vue.component('channel-chat', __webpack_require__(129));
 Vue.component('chat-messages', __webpack_require__(129));
 Vue.component('chat-form', __webpack_require__(175));
 
@@ -67912,23 +67913,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         leaveChannel: function leaveChannel() {
+            console.log(location);
             //                axios.post(`/channels/${this.channel.name}/leave`)
-            //                    .then(() => {
-            ////                        Echo.leave(`channel.${this.channel.id}`);
-            //                        this.closeChat();
-            //                    });
+            //                    .then(() => Echo.leave(this.channel.pusher_name))
+            //                    .then(() => );
         },
         joinToChannel: function joinToChannel() {
             var _this = this;
 
-            axios.post('/channels/join/' + this.channel.name).then(function (_ref) {
+            axios.post('/channels/' + this.channel.name + '/join').then(function (_ref) {
                 var data = _ref.data;
-
-                _this.listen();
+                return _this.listen();
             }).catch(function () {
-                _this.closeChat();
-                Echo.leave(_this.channel.pusher_name);
-                window.events.$emit('flash', 'Problem joining to channel');
+                return window.events.$emit('flash', 'Problem joining to channel');
             });
         },
         listen: function listen() {
@@ -67941,7 +67938,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this2.users.push(user);
             }).leaving(function (user) {
                 console.log('User leaving: ' + user.name);
-                axios.post('/channels/' + _this2.channel.name + '/leave/' + user.id);
                 _this2.users.splice(user, 1);
             }).listen('MessageSent', function (data) {
                 console.log('Message received: ', data);
@@ -67960,14 +67956,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         sendMessage: function sendMessage() {
             if (!this.message) return;
+
             axios.post('/channels/' + this.channel.name + '/messages', {
                 'text': this.message
             }).then(function (response) {});
+
             this.addMessage();
             this.scrollToEnd();
         },
         addMessage: function addMessage() {
             this.messages.push({
+                'user_id': App.user.id,
                 'channel_id': this.channel,
                 'created_at': __WEBPACK_IMPORTED_MODULE_0_moment___default()().format(),
                 'text': this.message,
@@ -67984,10 +67983,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 var container = _this4.$el.querySelector("#messages-list");
                 container.scrollTop = container.scrollHeight;
             });
-        },
-        closeChat: function closeChat() {
-            this.$emit('user-leave', this.channel);
-            this.$parent.selectedChannel = null;
         },
         emojiClicked: function emojiClicked(event) {
             this.message = this.message + event.native;
@@ -73909,7 +73904,7 @@ var render = function() {
                 attrs: { type: "button" },
                 on: {
                   click: function($event) {
-                    _vm.closeChat()
+                    _vm.leaveChannel()
                   }
                 }
               },
@@ -73927,22 +73922,31 @@ var render = function() {
             "ul",
             { staticClass: "messages-list", attrs: { id: "messages-list" } },
             _vm._l(_vm.messages, function(message) {
-              return _c("li", { staticClass: "message" }, [
-                _c("strong", {
-                  staticClass: "message-username",
-                  domProps: { textContent: _vm._s(message.user.name) }
-                }),
-                _vm._v("\n                        said "),
-                _c("span", {
-                  staticClass: "message-timestamp",
-                  domProps: { textContent: _vm._s(_vm.ago(message.created_at)) }
-                }),
-                _vm._v(":\n                        "),
-                _c("p", {
-                  staticClass: "message-text-",
-                  domProps: { textContent: _vm._s(message.text) }
-                })
-              ])
+              return _c(
+                "li",
+                {
+                  staticClass: "message",
+                  class: { "align-self-end": _vm.authorize("owns", message) }
+                },
+                [
+                  _c("strong", {
+                    staticClass: "message-username",
+                    domProps: { textContent: _vm._s(message.user.name) }
+                  }),
+                  _vm._v("\n                        said "),
+                  _c("span", {
+                    staticClass: "message-timestamp",
+                    domProps: {
+                      textContent: _vm._s(_vm.ago(message.created_at))
+                    }
+                  }),
+                  _vm._v(":\n                        "),
+                  _c("p", {
+                    staticClass: "message-text-",
+                    domProps: { textContent: _vm._s(message.text) }
+                  })
+                ]
+              )
             })
           )
         ]),
@@ -74090,82 +74094,61 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      !_vm.selectedChannel
-        ? _c(
-            "div",
-            { staticClass: "row channels-container" },
-            [
-              _c(
-                "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: !_vm.channels.length,
-                      expression: "!channels.length"
-                    }
-                  ]
-                },
-                [_c("p", [_vm._v("No Channels")])]
-              ),
-              _vm._v(" "),
-              _vm._l(_vm.channels, function(channel) {
-                return _c(
-                  "div",
-                  { staticClass: "col-xs-6 col-md-4 col-lg-3" },
-                  [
-                    _c("div", { staticClass: "card card-channel" }, [
-                      _vm._m(0, true),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "card-body" }, [
-                        _c("h4", { staticClass: "card-title" }, [
-                          _vm.isFull(channel)
-                            ? _c("span", {
-                                domProps: { textContent: _vm._s(channel.name) }
-                              })
-                            : _c("a", {
-                                attrs: { href: "#" },
-                                domProps: { textContent: _vm._s(channel.name) },
-                                on: {
-                                  click: function($event) {
-                                    _vm.channelClicked(channel)
-                                  }
-                                }
-                              })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "card-footer text-muted" }, [
-                        _c("small", [
-                          _vm._v(
-                            _vm._s(channel.users_count) +
-                              " / " +
-                              _vm._s(channel.capacity)
-                          )
-                        ])
-                      ])
-                    ])
-                  ]
+  return _c("div", [
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: !_vm.channels.length,
+            expression: "!channels.length"
+          }
+        ]
+      },
+      [_c("p", [_vm._v("No Channels")])]
+    ),
+    _vm._v(" "),
+    !_vm.isLogged()
+      ? _c("div", { staticClass: "alert alert-warning" }, [
+          _vm._v("\n        You need be logged to join public channels\n    ")
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "row" },
+      _vm._l(_vm.channels, function(channel) {
+        return _c("div", { staticClass: "col-xs-6 col-md-4 col-lg-3" }, [
+          _c("div", { staticClass: "card card-channel" }, [
+            _vm._m(0, true),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _c("h4", { staticClass: "card-title" }, [
+                !_vm.isFull(channel) && _vm.isLogged()
+                  ? _c("a", {
+                      attrs: { href: "/channels/" + channel.name },
+                      domProps: { textContent: _vm._s(channel.name) }
+                    })
+                  : _c("span", {
+                      domProps: { textContent: _vm._s(channel.name) }
+                    })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-footer text-muted" }, [
+              _c("small", [
+                _vm._v(
+                  _vm._s(channel.users_count) + " / " + _vm._s(channel.capacity)
                 )
-              })
-            ],
-            2
-          )
-        : _c("channel-chat", {
-            attrs: { data: _vm.selectedChannel },
-            on: {
-              "user-leave": function($event) {
-                _vm.userLeave()
-              }
-            }
-          })
-    ],
-    1
-  )
+              ])
+            ])
+          ])
+        ])
+      })
+    )
+  ])
 }
 var staticRenderFns = [
   function() {

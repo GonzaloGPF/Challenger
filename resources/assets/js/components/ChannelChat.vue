@@ -18,7 +18,7 @@
                         <!--<button type="button" class="btn link" @click="closeChat()">-->
                             <!--<i class="material-icons">indeterminate_check_box</i>-->
                         <!--</button>-->
-                        <button type="button" class="btn link" @click="closeChat()">
+                        <button type="button" class="btn link" @click="leaveChannel()">
                             <i class="material-icons">close</i>
                         </button>
                     </div>
@@ -30,7 +30,7 @@
                 <div class="col-10 pr-0">
                     <ul class="messages-list" id="messages-list">
 
-                        <li class="message" v-for="message in messages">
+                        <li class="message" :class="{'align-self-end': authorize('owns', message)}" v-for="message in messages">
                             <strong class="message-username" v-text="message.user.name"></strong>
                             said <span v-text="ago(message.created_at)" class="message-timestamp"></span>:
                             <p class="message-text-" v-text="message.text"></p>
@@ -109,23 +109,16 @@
 
         methods: {
             leaveChannel(){
+                console.log(location);
 //                axios.post(`/channels/${this.channel.name}/leave`)
-//                    .then(() => {
-////                        Echo.leave(`channel.${this.channel.id}`);
-//                        this.closeChat();
-//                    });
+//                    .then(() => Echo.leave(this.channel.pusher_name))
+//                    .then(() => );
             },
 
             joinToChannel(){
-                axios.post(`/channels/join/${this.channel.name}`)
-                    .then(({data}) => {
-                        this.listen();
-                    })
-                    .catch(() => {
-                        this.closeChat();
-                        Echo.leave(this.channel.pusher_name);
-                        window.events.$emit('flash', 'Problem joining to channel');
-                    });
+                axios.post(`/channels/${this.channel.name}/join`)
+                    .then(({data}) => this.listen())
+                    .catch(() => window.events.$emit('flash', 'Problem joining to channel'));
             },
 
             listen(){
@@ -139,7 +132,6 @@
                     })
                     .leaving((user) => {
                         console.log('User leaving: '+user.name);
-                        axios.post(`/channels/${this.channel.name}/leave/${user.id}`);
                         this.users.splice(user, 1);
                     })
                     .listen('MessageSent', (data) => {
@@ -158,16 +150,18 @@
 
             sendMessage() {
                 if(! this.message) return;
+
                 axios.post(`/channels/${this.channel.name}/messages`, {
                     'text': this.message
-                }).then(response => {
                 });
+
                 this.addMessage();
                 this.scrollToEnd();
             },
 
             addMessage() {
                this.messages.push({
+                   'user_id': App.user.id,
                    'channel_id': this.channel ,
                    'created_at': moment().format(),
                    'text': this.message ,
@@ -183,11 +177,6 @@
                     let container = this.$el.querySelector("#messages-list");
                     container.scrollTop = container.scrollHeight;
                 });
-            },
-
-            closeChat() {
-                this.$emit('user-leave', this.channel);
-                this.$parent.selectedChannel = null;
             },
 
             emojiClicked(event) {
